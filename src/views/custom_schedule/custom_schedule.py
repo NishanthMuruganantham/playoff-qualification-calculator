@@ -127,5 +127,14 @@ def simulate_the_qualification_for_custom_schedule():
                     points_table_df_column.markdown("Current Points Table")
                     points_table_df_column.dataframe(points_table_simulator.current_points_table, hide_index=True)
 
+                with st.form(key="select_team_to_generate_qualification_scenarios"):
+                    selected_team = st.selectbox(
+                        label="Select Team to generate qualification scenarios",
+                        options=points_table_simulator.available_teams_in_fixture,
+                        help="Select the team you want to generate the qualification scenarios",
+                    )
+                    submit_button = st.form_submit_button("Submit")
+
+
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
