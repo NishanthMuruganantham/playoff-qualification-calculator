@@ -119,5 +119,13 @@ def simulate_the_qualification_for_custom_schedule():
                     tournament_schedule_match_number_column_name=session_state["match_number_column_name"],
                 )
 
+                with st.expander("**Click here to expand remaining fixture and current points table**"):
+                    schedule_df_column, points_table_df_column = st.columns(2, gap="small")
+                    schedule_df_column.markdown("Remaining Fixture")
+                    schedule_df_column.dataframe(uploaded_fixture_df, hide_index=True)
+
+                    points_table_df_column.markdown("Current Points Table")
+                    points_table_df_column.dataframe(points_table_simulator.current_points_table, hide_index=True)
+
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
