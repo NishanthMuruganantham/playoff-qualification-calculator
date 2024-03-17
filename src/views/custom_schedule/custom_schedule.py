@@ -5,6 +5,7 @@ import time
 from points_table_simulator.points_table_simulator import PointsTableSimulator
 from points_table_simulator.exceptions import InvalidColumnNamesError
 
+
 session_state = {
     "column_name_input_form_submitted": False,
     "generate_qualification_scenarios_inputs_submitted": False,
@@ -104,18 +105,38 @@ def _display_given_fixture_and_current_points_table(current_points_table: pd.Dat
         points_table_df_column.markdown("Current Points Table")
         points_table_df_column.dataframe(current_points_table, hide_index=True)
 
-def _display_qualification_scenarios(list_of_points_tables: List[pd.DataFrame], list_of_qualification_scenarios: List[pd.DataFrame]):
+def _display_qualification_scenarios(
+    list_of_points_tables: List[pd.DataFrame], list_of_qualification_scenarios: List[pd.DataFrame], selected_team: str
+):
     """Display the qualification scenarios."""
     for scenario_no, (points_table, schedule) in enumerate(zip(list_of_points_tables, list_of_qualification_scenarios)):
         with st.expander(f"**Click here to expand qualification scenario {scenario_no + 1}**"):
             st.write("")
-            st.markdown(f"<h5>Qualification Scenario {scenario_no + 1}:</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h3 style='color: #1e90ff;'>Qualification Scenario {scenario_no + 1}:</h3>", unsafe_allow_html=True)
             st.write("")
             qualification_fixture_column, qualification_points_table_column = st.columns(2, gap="small")
-            qualification_fixture_column.markdown("Schedule")
-            qualification_fixture_column.dataframe(schedule, hide_index=True)
-            qualification_points_table_column.markdown("Points Table")
-            qualification_points_table_column.dataframe(points_table, hide_index=True)
+            qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Outcome</p>", unsafe_allow_html=True)
+            qualification_fixture_column.dataframe(
+                schedule.style.apply(
+                    lambda row: [
+                        'background-color: CornflowerBlue;' if row[
+                            session_state["away_team_column_name"]
+                        ] == selected_team or row[
+                            session_state["home_team_column_name"]
+                        ] == selected_team else '' for _ in row
+                    ],
+                    axis=1
+                ),
+                hide_index=True
+            )
+            qualification_points_table_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Points Table</p>", unsafe_allow_html=True)
+            qualification_points_table_column.dataframe(
+                points_table.style.apply(
+                    lambda row: ['background-color: CornflowerBlue;' if row["team"] == selected_team else '' for _ in row],
+                    axis=1
+                ),
+                hide_index=True
+            )
             time.sleep(1)
 
 def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: PointsTableSimulator) -> Dict[str, int]:
@@ -199,7 +220,11 @@ def simulate_the_qualification_for_custom_schedule():
                                 {session_state['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
                             unsafe_allow_html=True
                         )
-                    _display_qualification_scenarios(list_of_points_tables, list_of_qualification_scenarios)
+                    _display_qualification_scenarios(
+                        list_of_points_tables,
+                        list_of_qualification_scenarios,
+                        session_state["selected_team_to_generate_qualification_scenarios"],
+                    )
 
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
