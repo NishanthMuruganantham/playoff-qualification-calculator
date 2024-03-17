@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import time
 from points_table_simulator.points_table_simulator import PointsTableSimulator
-from points_table_simulator.exceptions import InvalidColumnNamesError
+from points_table_simulator.exceptions import InvalidColumnNamesError, NoQualifyingScenariosError
 
 
 session_state = {
@@ -229,3 +229,9 @@ def simulate_the_qualification_for_custom_schedule():
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
 
+            except NoQualifyingScenariosError as no_qualifying_scenarios_error:
+                st.error(
+                    f"Error: No qualifying scenarios found for the given team '{no_qualifying_scenarios_error.team_name}' at \
+                        position '{no_qualifying_scenarios_error.points_table_position}' in the points table",
+                    icon="⚠️"
+                )
