@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import time
 from points_table_simulator.points_table_simulator import PointsTableSimulator
-from points_table_simulator.exceptions import InvalidColumnNamesError, NoQualifyingScenariosError
+from points_table_simulator.exceptions import InvalidColumnNamesError, InvalidScheduleDataError, NoQualifyingScenariosError
 
 
 session_state = {
@@ -115,7 +115,7 @@ def _display_qualification_scenarios(
             st.markdown(f"<h3 style='color: #1e90ff;'>Qualification Scenario {scenario_no + 1}:</h3>", unsafe_allow_html=True)
             st.write("")
             qualification_fixture_column, qualification_points_table_column = st.columns(2, gap="small")
-            qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Outcome</p>", unsafe_allow_html=True)
+            qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Favourable Outcome</p>", unsafe_allow_html=True)
             qualification_fixture_column.dataframe(
                 schedule.style.apply(
                     lambda row: [
@@ -228,6 +228,9 @@ def simulate_the_qualification_for_custom_schedule():
 
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
+
+            except InvalidScheduleDataError as schedule_data_error:
+                st.error(f"Error: Given fixture has empty or Nan values in the '{schedule_data_error.column_name}' column", icon="⚠️")
 
             except NoQualifyingScenariosError as no_qualifying_scenarios_error:
                 st.error(
