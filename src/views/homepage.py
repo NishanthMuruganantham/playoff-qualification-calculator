@@ -18,10 +18,16 @@ def homepage():
             <ol>
                 <li>The user can find the various ongoing tournaments from the dropdown in the sidebar and select the one they want.</li>
                 <li>Once the tournament is selected, the page will display three components.</li>
-                <li>wdwd</li>
-                <li>wdwd</li>
+                <li>
+                    Tournament Fixture along with the result for the selected tournament
+                </li>
+                <li>
+                    Ponits Table for the selected tournament
+                </li>
+                <li>A form containing a dropdown containg the list of teams, and also the inputs for their desired position in the points table</li>
+                <li>Once the user selects and submits their favorite team, the tool will generate the various lists of possible remaining fixture outcomes which would favor their favorite team's qualification.</li>
             </ol>
-            <p>One is the selected tournament fixture with the details of the match number, home team, away team, and also the winner team in case of completed matches. The second component is the points table. The third one is a dropdown containing the list of teams playing in that tournament. When the user selects and submits their favorite team, the tool will generate the various lists of possible remaining fixture outcomes which would favor their favorite team's qualification.</p>
+            <h3>About this tool</h3>
             <p>The tool is built using Python and Streamlit, allowing it to be easily deployed and used in any web application. The user can customize the tool to suit their needs and preferences, making it a powerful tool for sports enthusiasts and fans alike.</p>
             <p>The tool is currently in beta stage, so please report any bugs or issues you encounter. Thank you for using the tool! 🙏</p>
             <p>Enjoy the tool and let's get started! 👋</p>
