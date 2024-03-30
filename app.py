@@ -1,12 +1,14 @@
 import streamlit as st
 from src.views.custom_schedule.custom_schedule import simulate_the_qualification_for_custom_schedule
 from src.views.homepage import homepage
+from src.views.tournament import simulate_for_ipl
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Playoff Qualification Scenario Generator", page_icon=":soccer:",layout="wide")
 
 
 page_names_to_funcs = {
     "Home": homepage,
+    "Indian Premier League (IPL)": simulate_for_ipl,
     "custom": simulate_the_qualification_for_custom_schedule
 }
 
