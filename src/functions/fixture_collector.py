@@ -23,8 +23,9 @@ def get_fixture_for_given_tournament(tournament_id: int) -> pd.DataFrame:
     response.raise_for_status()
     response_data = response.json()
     fixture_data = response_data["content"]["matches"]
-    match_list = [_get_match_info(match_data, match_index) for match_index, match_data in enumerate(fixture_data)]
-
+    match_list = [
+        _get_match_info(match_data, match_index) for match_index, match_data in enumerate(fixture_data) if "Match" in match_data["title"]
+    ]   # condition for "Match" has been added as it indicates league matches and we are not considering the playoff matches in the fixture
     return pd.DataFrame(match_list)
 
 
