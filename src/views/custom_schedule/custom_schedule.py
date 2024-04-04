@@ -4,62 +4,14 @@ import pandas as pd
 import time
 from points_table_simulator.points_table_simulator import PointsTableSimulator
 from points_table_simulator.exceptions import InvalidColumnNamesError, InvalidScheduleDataError, NoQualifyingScenariosError
+from src.functions.streamlit_view_functions import _display_given_fixture_and_current_points_table
+from src.static._styles import _apply_banner_styles, _create_banner
 
 
 session_state = {
     "column_name_input_form_submitted": False,
     "generate_qualification_scenarios_inputs_submitted": False,
 }
-
-def _apply_banner_styles():
-    """Apply custom CSS styles to the banner."""
-    st.markdown(
-        """
-        <style>
-            .banner {
-                background-color: #4CAF50;
-                padding: 40px 20px;
-                text-align: center;
-                margin-bottom: 30px;
-                border-radius: 10px;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            .title {
-                color: white;
-                font-size: 36px;
-                font-weight: bold;
-                margin-bottom: 20px;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            }
-            .subtitle {
-                color: white;
-                font-size: 28px;
-                margin-bottom: 20px;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            }
-            .description {
-                color: white;
-                font-size: 20px;
-                line-height: 1.5;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-def _create_banner():
-    """Display the banner with title and description."""
-    st.markdown(
-        """
-        <div class="banner">
-            <div class="title">🏆⚽ Qualification Scenario Generator ⚽🏆</div>
-            <div class="subtitle">📊 Calculate qualification scenarios for your own tournament fixture 📊</div>
-            <p class="description">📂 Upload your tournament fixture and calculate the various possible qualification scenarios for your favorite team 📈</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 def _create_column_name_inputs_form() -> Dict[str, str]:
     """Create form inputs for custom column names."""
@@ -96,14 +48,6 @@ def _create_column_name_inputs_form() -> Dict[str, str]:
         "points_for_a_no_result": points_for_a_no_result,
     }
 
-def _display_given_fixture_and_current_points_table(current_points_table: pd.DataFrame, remaining_fixture: pd.DataFrame):
-    """Display the given fixture and current points table."""
-    with st.expander("**Click here to expand given fixture and current points table**"):
-        schedule_df_column, points_table_df_column = st.columns(2, gap="small")
-        schedule_df_column.markdown("Remaining Fixture")
-        schedule_df_column.dataframe(remaining_fixture, hide_index=True)
-        points_table_df_column.markdown("Current Points Table")
-        points_table_df_column.dataframe(current_points_table, hide_index=True)
 
 def _display_qualification_scenarios(
     list_of_points_tables: List[pd.DataFrame], list_of_qualification_scenarios: List[pd.DataFrame], selected_team: str
@@ -238,3 +182,4 @@ def simulate_the_qualification_for_custom_schedule():
                         position '{no_qualifying_scenarios_error.points_table_position}' in the points table",
                     icon="⚠️"
                 )
+                
