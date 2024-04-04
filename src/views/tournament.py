@@ -8,7 +8,8 @@ from src.functions.streamlit_view_functions import _display_given_fixture_and_cu
 def simulate_for_ipl():
     tournament_df = None
     _apply_banner_styles()
-    _create_banner()
+    _create_banner(subtitle="For Indian Premier League")
+    st.write("")
     with st.balloons():
         tournament_df = get_fixture_for_given_tournament(1410320)
         points_table_simulator = PointsTableSimulator(
