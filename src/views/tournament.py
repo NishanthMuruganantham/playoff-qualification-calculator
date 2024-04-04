@@ -20,5 +20,6 @@ def simulate_for_ipl():
         )
         _display_given_fixture_and_current_points_table(
             current_points_table=points_table_simulator.current_points_table,
-            remaining_fixture=tournament_df
+            expanded=True,
+            remaining_fixture=tournament_df,
         )
