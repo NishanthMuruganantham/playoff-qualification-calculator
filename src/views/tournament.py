@@ -4,6 +4,7 @@ import streamlit as st
 from points_table_simulator import PointsTableSimulator
 from src.functions.streamlit_view_functions import (
     _display_given_fixture_and_current_points_table,
+    _display_qualification_scenarios,
     _get_inputs_to_generate_qualification_scenarios
 )
 
@@ -50,3 +51,8 @@ def simulate_for_ipl():
                     {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
                 unsafe_allow_html=True
             )
+        _display_qualification_scenarios(
+            list_of_points_tables,
+            list_of_qualification_scenarios,
+            inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+        )
