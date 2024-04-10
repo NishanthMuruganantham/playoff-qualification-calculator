@@ -2,6 +2,7 @@ from src.functions.fixture_collector import get_fixture_for_given_tournament
 from src.views.custom_schedule.custom_schedule import _apply_banner_styles, _create_banner
 import streamlit as st
 from points_table_simulator import PointsTableSimulator
+from points_table_simulator.exceptions import TournamentCompletionBelowCutoffError
 from src.functions.streamlit_view_functions import (
     _display_given_fixture_and_current_points_table,
     _display_qualification_scenarios,
@@ -11,7 +12,8 @@ from src.functions.streamlit_view_functions import (
 
 def simulate_for_ipl():
     session_state = {
-        "generate_qualification_scenarios_inputs_submitted": False
+        "generate_qualification_scenarios_inputs_submitted": False,
+        "qualification_scenario_generated": False
     }
     tournament_df = None
     _apply_banner_styles()
@@ -38,21 +40,30 @@ def simulate_for_ipl():
 
     if session_state["generate_qualification_scenarios_inputs_submitted"]:
         with st.snow():
-            (
+            try:
+                (
+                    list_of_points_tables,
+                    list_of_qualification_scenarios
+                ) = points_table_simulator.simulate_the_qualification_scenarios(
+                    inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+                    inputs_for_generating_qualification_scenarios["expected_position_in_the_points_table"],
+                    inputs_for_generating_qualification_scenarios["number_of_qualification_scenarios"]
+                )
+                session_state["qualification_scenario_generated"] = True
+                st.markdown(
+                    f"<p>Please find below the various qualification scenarios for <b>\
+                        {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
+                    unsafe_allow_html=True
+                )
+            except TournamentCompletionBelowCutoffError as exception:
+                st.error(
+                    f"Only {exception.tournament_completion_percentage}% of the tournament has completed. The tournament \
+                        should atleast be {exception.cutoff_percentage}% completed to check for the qualification scenarios"
+                )
+        if session_state["qualification_scenario_generated"]:
+            _display_qualification_scenarios(
                 list_of_points_tables,
-                list_of_qualification_scenarios
-            ) = points_table_simulator.simulate_the_qualification_scenarios(
+                list_of_qualification_scenarios,
                 inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
-                inputs_for_generating_qualification_scenarios["expected_position_in_the_points_table"],
-                inputs_for_generating_qualification_scenarios["number_of_qualification_scenarios"]
             )
-            st.markdown(
-                f"<p>Please find below the various qualification scenarios for <b>\
-                    {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
-                unsafe_allow_html=True
-            )
-        _display_qualification_scenarios(
-            list_of_points_tables,
-            list_of_qualification_scenarios,
-            inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
-        )
+            session_state["qualification_scenario_generated"] = False
