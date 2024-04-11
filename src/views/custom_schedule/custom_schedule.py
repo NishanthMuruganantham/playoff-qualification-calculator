@@ -1,10 +1,13 @@
-from typing import List, Dict
+from typing import Dict
 import streamlit as st
 import pandas as pd
-import time
 from points_table_simulator.points_table_simulator import PointsTableSimulator
 from points_table_simulator.exceptions import InvalidColumnNamesError, InvalidScheduleDataError, NoQualifyingScenariosError
-from src.functions.streamlit_view_functions import _display_given_fixture_and_current_points_table
+from src.functions.streamlit_view_functions import (
+    _display_given_fixture_and_current_points_table,
+    _display_qualification_scenarios,
+    _get_inputs_to_generate_qualification_scenarios
+)
 from src.static._styles import _apply_banner_styles, _create_banner
 
 
@@ -49,68 +52,6 @@ def _create_column_name_inputs_form() -> Dict[str, str]:
     }
 
 
-def _display_qualification_scenarios(
-    list_of_points_tables: List[pd.DataFrame], list_of_qualification_scenarios: List[pd.DataFrame], selected_team: str
-):
-    """Display the qualification scenarios."""
-    for scenario_no, (points_table, schedule) in enumerate(zip(list_of_points_tables, list_of_qualification_scenarios)):
-        with st.expander(f"**Click here to expand qualification scenario {scenario_no + 1}**"):
-            st.write("")
-            st.markdown(f"<h3 style='color: #1e90ff;'>Qualification Scenario {scenario_no + 1}:</h3>", unsafe_allow_html=True)
-            st.write("")
-            qualification_fixture_column, qualification_points_table_column = st.columns(2, gap="small")
-            qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Favourable Outcome</p>", unsafe_allow_html=True)
-            qualification_fixture_column.dataframe(
-                schedule.style.apply(
-                    lambda row: [
-                        'background-color: CornflowerBlue;' if row[
-                            session_state["away_team_column_name"]
-                        ] == selected_team or row[
-                            session_state["home_team_column_name"]
-                        ] == selected_team else '' for _ in row
-                    ],
-                    axis=1
-                ),
-                hide_index=True
-            )
-            qualification_points_table_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Points Table</p>", unsafe_allow_html=True)
-            qualification_points_table_column.dataframe(
-                points_table.style.apply(
-                    lambda row: ['background-color: CornflowerBlue;' if row["team"] == selected_team else '' for _ in row],
-                    axis=1
-                ),
-                hide_index=True
-            )
-            time.sleep(1)
-
-def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: PointsTableSimulator) -> Dict[str, int]:
-    """Get inputs to generate qualification scenarios."""
-    selected_team = st.selectbox(
-        label="Select Team to generate qualification scenarios",
-        options=points_table_simulator.available_teams_in_fixture,
-        help="Select the team you want to generate the qualification scenarios",
-    )
-    input_column_1, input_column_2 = st.columns(2, gap="small")
-    expected_position_in_the_points_table = input_column_1.number_input(
-        "Your expected position in the points table",
-        max_value=len(points_table_simulator.current_points_table) + 1,
-        min_value=1,
-        value=4,
-    )
-    number_of_qualification_scenarios = input_column_2.number_input(
-        "Number of qualification scenarios to generate",
-        max_value=10,
-        min_value=1,
-        value=4,
-        help="Select the number of qualification scenarios you want to generate",
-        key="number_of_qualification_scenarios"
-    )
-    return {
-        "selected_team_to_generate_qualification_scenarios": selected_team,
-        "expected_position_in_the_points_table": expected_position_in_the_points_table,
-        "number_of_qualification_scenarios": number_of_qualification_scenarios,
-    }
-
 def simulate_the_qualification_for_custom_schedule():
     """Main function to simulate qualification scenarios for a custom schedule."""
     _apply_banner_styles()
@@ -141,13 +82,10 @@ def simulate_the_qualification_for_custom_schedule():
 
                 _display_given_fixture_and_current_points_table(points_table_simulator.current_points_table, uploaded_fixture_df)
 
-                with st.form(key="select_team_to_generate_qualification_scenarios"):
-                    generate_qualification_scenarios_inputs = _get_inputs_to_generate_qualification_scenarios(points_table_simulator)
-                    generate_qualification_scenarios_inputs_submit_button = st.form_submit_button("Submit")
+                inputs_for_generating_qualification_scenarios = _get_inputs_to_generate_qualification_scenarios(points_table_simulator)
 
-                if generate_qualification_scenarios_inputs_submit_button:
+                if inputs_for_generating_qualification_scenarios["generate_qualification_scenarios_inputs_submitted"]:
                     session_state["generate_qualification_scenarios_inputs_submitted"] = True
-                    session_state.update(generate_qualification_scenarios_inputs)
 
                 if session_state["generate_qualification_scenarios_inputs_submitted"]:
                     with st.snow():
@@ -155,19 +93,21 @@ def simulate_the_qualification_for_custom_schedule():
                             list_of_points_tables,
                             list_of_qualification_scenarios
                         ) = points_table_simulator.simulate_the_qualification_scenarios(
-                            session_state["selected_team_to_generate_qualification_scenarios"],
-                            session_state["expected_position_in_the_points_table"],
-                            session_state["number_of_qualification_scenarios"]
+                            inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+                            inputs_for_generating_qualification_scenarios["expected_position_in_the_points_table"],
+                            inputs_for_generating_qualification_scenarios["number_of_qualification_scenarios"]
                         )
                         st.markdown(
                             f"<p>Please find below the various qualification scenarios for <b>\
-                                {session_state['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
+                                {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
                             unsafe_allow_html=True
                         )
                     _display_qualification_scenarios(
                         list_of_points_tables,
                         list_of_qualification_scenarios,
-                        session_state["selected_team_to_generate_qualification_scenarios"],
+                        inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+                        session_state["away_team_column_name"],
+                        session_state["home_team_column_name"]
                     )
 
             except InvalidColumnNamesError as column_name_error:
@@ -182,4 +122,3 @@ def simulate_the_qualification_for_custom_schedule():
                         position '{no_qualifying_scenarios_error.points_table_position}' in the points table",
                     icon="⚠️"
                 )
-                
