@@ -18,6 +18,8 @@ def _display_given_fixture_and_current_points_table(
         schedule_df_column.dataframe(remaining_fixture, hide_index=True)
         points_table_df_column.markdown("<h5 style='color: #1e90ff; text-align: center'>Current Points Table</h5>", unsafe_allow_html=True)
         st.write("")
+        rename_dict = {column: column.replace("matches_", "") for column in current_points_table.columns if column != "team"}
+        current_points_table = current_points_table.rename(rename_dict, axis=1)
         points_table_df_column.dataframe(current_points_table, hide_index=True)
 
 
@@ -50,6 +52,8 @@ def _display_qualification_scenarios(
                 hide_index=True
             )
             qualification_points_table_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Points Table</p>", unsafe_allow_html=True)
+            rename_dict = {column: column.replace("matches_", "") for column in points_table.columns if column != "team"}
+            points_table = points_table.rename(rename_dict, axis=1)
             qualification_points_table_column.dataframe(
                 points_table.style.apply(
                     lambda row: ['background-color: CornflowerBlue;' if row["team"] == selected_team else '' for _ in row],
