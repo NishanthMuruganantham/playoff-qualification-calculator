@@ -1,15 +1,16 @@
 from typing import Dict
-import streamlit as st
 import pandas as pd
+import streamlit as st
+from points_table_simulator.exceptions import (
+    InvalidColumnNamesError,
+    InvalidScheduleDataError
+)
 from points_table_simulator.points_table_simulator import PointsTableSimulator
-from points_table_simulator.exceptions import InvalidColumnNamesError, InvalidScheduleDataError, NoQualifyingScenariosError
 from src.functions.streamlit_view_functions import (
     _display_given_fixture_and_current_points_table,
-    _display_qualification_scenarios,
-    _get_inputs_to_generate_qualification_scenarios
+    _generate_qualification_scenarios
 )
 from src.static._styles import _apply_banner_styles, _create_banner
-
 
 session_state = {
     "column_name_input_form_submitted": False,
@@ -21,7 +22,8 @@ def _create_column_name_inputs_form() -> Dict[str, str]:
     st.markdown(
         """
         <div style="margin-bottom: 20px;">
-            <p style="font-size: 18px; font-style: italic; color: #4CAF50;">Please enter the names for the respective columns in your fixture if they are different from the below defaults</p>
+            <p style="font-size: 18px; font-style: italic; color: #4CAF50;">
+            Please enter the names for the respective columns in your fixture if they are different from the below defaults</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -56,7 +58,13 @@ def simulate_the_qualification_for_custom_schedule():
     """Main function to simulate qualification scenarios for a custom schedule."""
     _apply_banner_styles()
     _create_banner()
-    fixture = st.file_uploader("Upload the CSV file", type="csv", key="file_uploader", accept_multiple_files=False, help="Please upload your tournament fixture file in CSV format.")
+    fixture = st.file_uploader(
+        "Upload the CSV file",
+        type="csv",
+        key="file_uploader",
+        accept_multiple_files=False,
+        help="Please upload your tournament fixture file in CSV format."
+    )
 
     if fixture:
         with st.form(key="column_name_inputs_form", clear_on_submit=True):
@@ -82,43 +90,10 @@ def simulate_the_qualification_for_custom_schedule():
 
                 _display_given_fixture_and_current_points_table(points_table_simulator.current_points_table, uploaded_fixture_df)
 
-                inputs_for_generating_qualification_scenarios = _get_inputs_to_generate_qualification_scenarios(points_table_simulator)
-
-                if inputs_for_generating_qualification_scenarios["generate_qualification_scenarios_inputs_submitted"]:
-                    session_state["generate_qualification_scenarios_inputs_submitted"] = True
-
-                if session_state["generate_qualification_scenarios_inputs_submitted"]:
-                    with st.snow():
-                        (
-                            list_of_points_tables,
-                            list_of_qualification_scenarios
-                        ) = points_table_simulator.simulate_the_qualification_scenarios(
-                            inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
-                            inputs_for_generating_qualification_scenarios["expected_position_in_the_points_table"],
-                            inputs_for_generating_qualification_scenarios["number_of_qualification_scenarios"]
-                        )
-                        st.markdown(
-                            f"<p>Please find below the various qualification scenarios for <b>\
-                                {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
-                            unsafe_allow_html=True
-                        )
-                    _display_qualification_scenarios(
-                        list_of_points_tables,
-                        list_of_qualification_scenarios,
-                        inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
-                        session_state["away_team_column_name"],
-                        session_state["home_team_column_name"]
-                    )
+                _generate_qualification_scenarios(points_table_simulator)
 
             except InvalidColumnNamesError as column_name_error:
                 st.error(f"Error: Given column '{column_name_error.column_value}' is not found in the given CSV", icon="⚠️")
 
             except InvalidScheduleDataError as schedule_data_error:
                 st.error(f"Error: Given fixture has empty or Nan values in the '{schedule_data_error.column_name}' column", icon="⚠️")
-
-            except NoQualifyingScenariosError as no_qualifying_scenarios_error:
-                st.error(
-                    f"Error: No qualifying scenarios found for the given team '{no_qualifying_scenarios_error.team_name}' at \
-                        position '{no_qualifying_scenarios_error.points_table_position}' in the points table",
-                    icon="⚠️"
-                )
