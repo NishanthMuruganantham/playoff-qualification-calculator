@@ -1,7 +1,7 @@
+from typing import Dict, Union
 import numpy as np
 import pandas as pd
 import requests
-from typing import Dict, Union
 
 
 def get_fixture_for_given_tournament(tournament_id: int) -> pd.DataFrame:

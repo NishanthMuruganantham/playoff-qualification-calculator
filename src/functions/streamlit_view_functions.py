@@ -1,8 +1,12 @@
-import pandas as pd
-import streamlit as st
 import time
 from typing import Dict, List, Optional
+import pandas as pd
+import streamlit as st
 from points_table_simulator import PointsTableSimulator
+from points_table_simulator.exceptions import (
+    NoQualifyingScenariosError,
+    TournamentCompletionBelowCutoffError
+)
 
 
 def _display_given_fixture_and_current_points_table(
@@ -63,6 +67,54 @@ def _display_qualification_scenarios(
             )
             time.sleep(1)
             st.write("")
+
+
+def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulator):
+    _session_state = {
+        "generate_qualification_scenarios_inputs_submitted" : False
+    }
+    try:
+        inputs_for_generating_qualification_scenarios = _get_inputs_to_generate_qualification_scenarios(points_table_simulator)
+        if inputs_for_generating_qualification_scenarios["generate_qualification_scenarios_inputs_submitted"]:
+            _session_state["generate_qualification_scenarios_inputs_submitted"] = True
+
+        if _session_state["generate_qualification_scenarios_inputs_submitted"]:
+            list_of_points_tables = []
+            list_of_qualification_scenarios = []
+            with st.snow():
+                (
+                    list_of_points_tables,
+                    list_of_qualification_scenarios
+                ) = points_table_simulator.simulate_the_qualification_scenarios(
+                    inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+                    inputs_for_generating_qualification_scenarios["expected_position_in_the_points_table"],
+                    inputs_for_generating_qualification_scenarios["number_of_qualification_scenarios"]
+                )
+            st.markdown(
+                f"<p>Please find below the various qualification scenarios for <b>\
+                    {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
+                unsafe_allow_html=True
+            )
+            if list_of_points_tables:
+                _display_qualification_scenarios(
+                    list_of_points_tables,
+                    list_of_qualification_scenarios,
+                    inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
+                )
+                list_of_points_tables = []
+
+    except NoQualifyingScenariosError as no_qualifying_scenarios_error:
+        st.error(
+            f"Error: No qualifying scenarios found for the given team '{no_qualifying_scenarios_error.team_name}' at \
+                position '{no_qualifying_scenarios_error.points_table_position}' in the points table",
+            icon="⚠️"
+        )
+    except TournamentCompletionBelowCutoffError as exception:
+        st.error(
+            f"Only {exception.tournament_completion_percentage}% of the tournament has completed. The tournament \
+                should atleast be {exception.cutoff_percentage}% completed to check for the qualification scenarios",
+                icon="⚠️"
+        )
 
 
 def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: PointsTableSimulator) -> Dict[str, int]:

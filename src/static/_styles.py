@@ -83,7 +83,6 @@ def _apply_home_page_styles():
 
 
 def _create_banner(
-    description: str = "📂 Upload your tournament fixture and calculate the various possible qualification scenarios for your favorite team 📈",
     subtitle: str = "📊 Calculate qualification scenarios for your own tournament fixture 📊",
     title: str = "🏆 Playoff Qualification Scenario Generator 🔢"
 ):
