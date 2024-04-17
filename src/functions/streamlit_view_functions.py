@@ -117,7 +117,7 @@ def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulat
         )
 
 
-def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: PointsTableSimulator) -> Dict[str, int]:
+def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: PointsTableSimulator) -> Dict:
     """Get inputs to generate qualification scenarios."""
     with st.form(key="select_team_to_generate_qualification_scenarios"):
         selected_team = st.selectbox(
