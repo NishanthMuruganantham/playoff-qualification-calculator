@@ -17,7 +17,7 @@ session_state = {
     "generate_qualification_scenarios_inputs_submitted": False,
 }
 
-def _create_column_name_inputs_form() -> Dict[str, str]:
+def _get_details_of_the_uploaded_schedule() -> Dict:
     """Create form inputs for custom column names."""
     st.markdown(
         """
@@ -48,9 +48,9 @@ def _create_column_name_inputs_form() -> Dict[str, str]:
         "away_team_column_name": away_team_column_name,
         "winner_team_column_name": winner_team_column_name,
         "match_number_column_name": match_number_column_name,
-        "points_for_a_win": points_for_a_win,
-        "points_for_a_draw": points_for_a_draw,
-        "points_for_a_no_result": points_for_a_no_result,
+        "points_for_a_win": int(points_for_a_win),
+        "points_for_a_draw": int(points_for_a_draw),
+        "points_for_a_no_result": int(points_for_a_no_result),
     }
 
 
@@ -68,12 +68,11 @@ def simulate_the_qualification_for_custom_schedule():
 
     if fixture:
         with st.form(key="column_name_inputs_form", clear_on_submit=True):
-            column_name_inputs = _create_column_name_inputs_form()
-            column_name_inputs_form_submit_button_clicked = st.form_submit_button("Submit")
+            details_of_the_uploaded_schedule = _get_details_of_the_uploaded_schedule()
+            column_name_inputs_form_submitted = st.form_submit_button("Submit")
 
-        if column_name_inputs_form_submit_button_clicked:
+        if column_name_inputs_form_submitted:
             session_state["column_name_input_form_submitted"] = True
-            session_state.update(column_name_inputs)
 
         if session_state["column_name_input_form_submitted"]:
             st.write("")
@@ -81,11 +80,11 @@ def simulate_the_qualification_for_custom_schedule():
             try:
                 points_table_simulator = PointsTableSimulator(
                     tournament_schedule=uploaded_fixture_df,
-                    points_for_a_win=session_state["points_for_a_win"],
-                    tournament_schedule_away_team_column_name=session_state["away_team_column_name"],
-                    tournament_schedule_home_team_column_name=session_state["home_team_column_name"],
-                    tournament_schedule_winning_team_column_name=session_state["winner_team_column_name"],
-                    tournament_schedule_match_number_column_name=session_state["match_number_column_name"],
+                    points_for_a_win=details_of_the_uploaded_schedule["points_for_a_win"],
+                    tournament_schedule_away_team_column_name=details_of_the_uploaded_schedule["away_team_column_name"],
+                    tournament_schedule_home_team_column_name=details_of_the_uploaded_schedule["home_team_column_name"],
+                    tournament_schedule_winning_team_column_name=details_of_the_uploaded_schedule["winner_team_column_name"],
+                    tournament_schedule_match_number_column_name=details_of_the_uploaded_schedule["match_number_column_name"],
                 )
 
                 _display_given_fixture_and_current_points_table(points_table_simulator.current_points_table, uploaded_fixture_df)
