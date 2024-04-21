@@ -1,6 +1,6 @@
 import streamlit as st
 from points_table_simulator import PointsTableSimulator
-from src.functions.fixture_collector import get_fixture_for_given_tournament
+from src.functions.fixture_collector import fetch_points_table_for_given_tournament, get_fixture_for_given_tournament
 from src.functions.streamlit_view_functions import (
     _display_given_fixture_and_current_points_table,
     _generate_qualification_scenarios
@@ -25,7 +25,7 @@ def simulate_for_ipl():
             tournament_schedule_home_team_column_name="team_1",
         )
         _display_given_fixture_and_current_points_table(
-            current_points_table=points_table_simulator.current_points_table,
+            current_points_table=fetch_points_table_for_given_tournament(1410320),
             expanded=True,
             remaining_fixture=tournament_df,
         )
