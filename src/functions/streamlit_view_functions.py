@@ -81,6 +81,7 @@ def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulat
         if _session_state["generate_qualification_scenarios_inputs_submitted"]:
             list_of_points_tables = []
             list_of_qualification_scenarios = []
+            start_time = time.time()
             with st.snow():
                 (
                     list_of_points_tables,
@@ -92,15 +93,19 @@ def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulat
                 )
             st.markdown(
                 f"<p>Please find below the various qualification scenarios for <b>\
-                    {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b></p><hr>",
+                    {inputs_for_generating_qualification_scenarios['selected_team_to_generate_qualification_scenarios']}</b>\
+                        to be placed within <b>top {inputs_for_generating_qualification_scenarios['expected_position_in_the_points_table']}\
+                            position</b> in the points table </p><hr>",
                 unsafe_allow_html=True
             )
             if list_of_points_tables:
+                end_time = time.time()
                 _display_qualification_scenarios(
                     list_of_points_tables,
                     list_of_qualification_scenarios,
                     inputs_for_generating_qualification_scenarios["selected_team_to_generate_qualification_scenarios"],
                 )
+                st.write(f"Time taken to generate the qualification scenarios: {round(end_time - start_time, 2)} seconds")
                 list_of_points_tables = []
 
     except NoQualifyingScenariosError as no_qualifying_scenarios_error:
