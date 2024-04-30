@@ -58,6 +58,7 @@ def _display_qualification_scenarios(
             qualification_points_table_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Points Table</p>", unsafe_allow_html=True)
             rename_dict = {column: column.replace("matches_", "") for column in points_table.columns if column != "team"}
             points_table = points_table.rename(rename_dict, axis=1)
+            points_table = points_table[["team", "played", "won", "lost", "points"]]
             qualification_points_table_column.dataframe(
                 points_table.style.apply(
                     lambda row: ['background-color: CornflowerBlue;' if row["team"] == selected_team else '' for _ in row],
