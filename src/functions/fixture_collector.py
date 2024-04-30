@@ -106,7 +106,7 @@ def _get_match_info(match_data: Dict, match_index: int) -> Dict[str, Union[int, 
     elif match_data["status"] == "Live":
         winning_team_name = "Live"
     else:
-        winning_team_name = "NO RESULT"
+        winning_team_name = ""
 
     return {
         "match_number": match_index + 1,
