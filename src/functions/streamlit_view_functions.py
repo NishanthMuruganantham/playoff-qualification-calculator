@@ -9,6 +9,19 @@ from points_table_simulator.exceptions import (
 )
 
 
+def _display_non_winner_foot_notes(team_name):
+    _message = f"""
+        <p style="font-size: 16px;"><b>Note:</b></p>
+        <p style="font-size: 14px;">
+            If the selected team <span style="color: #007bff; font-weight: bold;">{team_name}</span> 
+            is not listed as the winner in any of its matches, that means the team 
+            is afford to either win or lose that match and that lose would not restrict their qualification chance going by this scenario.
+        </p>
+    """
+    st.write(_message, unsafe_allow_html=True)
+
+
+
 def _display_given_fixture_and_current_points_table(
     current_points_table: pd.DataFrame, remaining_fixture: pd.DataFrame, expanded: bool = False
 ):
@@ -68,6 +81,7 @@ def _display_qualification_scenarios(
             )
             time.sleep(1)
             st.write("")
+            _display_non_winner_foot_notes(selected_team)
 
 
 def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulator):
