@@ -31,7 +31,7 @@ def homepage():
             <p>The tool is built using Python and Streamlit, allowing it to be easily deployed and used in any web application. The user can customize the tool to suit their needs and preferences, making it a powerful tool for sports enthusiasts and fans alike.</p>
             <p>The tool is currently in beta stage, so please report any bugs or issues you encounter. Thank you for using the tool! 🙏</p>
             <p>Enjoy the tool and let's get started! 👋</p>
-            <p>Nishanth Murugananth</p>
+            <p style="font-size: 18px; font-weight: bold;">Nishanth Muruganantham</p>
         </div>
     """
 
