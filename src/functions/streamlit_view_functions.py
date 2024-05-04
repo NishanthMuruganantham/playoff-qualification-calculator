@@ -32,10 +32,12 @@ def _display_given_fixture_and_current_points_table(
         schedule_df_column, points_table_df_column = st.columns(2, gap="small")
         schedule_df_column.markdown("<h5 style='color: #1e90ff; text-align: center'>Remaining Fixture</h5>", unsafe_allow_html=True)
         st.write("")
+        remaining_fixture_columns = {column: column.replace("_", " ").title() for column in remaining_fixture.columns}
+        remaining_fixture = remaining_fixture.rename(remaining_fixture_columns, axis=1)
         schedule_df_column.dataframe(remaining_fixture, hide_index=True)
         points_table_df_column.markdown("<h5 style='color: #1e90ff; text-align: center'>Current Points Table</h5>", unsafe_allow_html=True)
         st.write("")
-        rename_dict = {column: column.replace("matches_", "") for column in current_points_table.columns if column != "team"}
+        rename_dict = {column: column.replace("matches_", " ").replace("_", " ").title() for column in current_points_table.columns}
         current_points_table = current_points_table.rename(rename_dict, axis=1)
         points_table_df_column.dataframe(current_points_table, hide_index=True)
 
@@ -53,15 +55,17 @@ def _display_qualification_scenarios(
             st.write("")
             st.markdown(f"<h3 style='color: #1e90ff;'>Qualification Scenario {scenario_no + 1}:</h3>", unsafe_allow_html=True)
             st.write("")
+            schedule_renamed_columns = {column:column.replace("_", " ").title() for column in schedule.columns}
+            schedule = schedule.rename(schedule_renamed_columns, axis=1)
             qualification_fixture_column, qualification_points_table_column = st.columns(2, gap="small")
             qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Favourable Outcome</p>", unsafe_allow_html=True)
             qualification_fixture_column.dataframe(
                 schedule.style.apply(
                     lambda row: [
                         'background-color: CornflowerBlue;' if row[
-                            away_team_column_name
+                            away_team_column_name.replace("_", " ").title()
                         ] == selected_team or row[
-                            home_team_column_name
+                            home_team_column_name.replace("_", " ").title()
                         ] == selected_team else '' for _ in row
                     ],
                     axis=1
@@ -69,12 +73,12 @@ def _display_qualification_scenarios(
                 hide_index=True
             )
             qualification_points_table_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Points Table</p>", unsafe_allow_html=True)
-            rename_dict = {column: column.replace("matches_", "") for column in points_table.columns if column != "team"}
+            rename_dict = {column: column.replace("matches_", "").title() for column in points_table.columns}
             points_table = points_table.rename(rename_dict, axis=1)
-            points_table = points_table[["team", "played", "won", "lost", "points"]]
+            points_table = points_table[["Team", "Played", "Won", "Lost", "Points"]]
             qualification_points_table_column.dataframe(
                 points_table.style.apply(
-                    lambda row: ['background-color: CornflowerBlue;' if row["team"] == selected_team else '' for _ in row],
+                    lambda row: ['background-color: CornflowerBlue;' if row["Team"] == selected_team else '' for _ in row],
                     axis=1
                 ),
                 hide_index=True
