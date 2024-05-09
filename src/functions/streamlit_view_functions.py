@@ -1,5 +1,5 @@
 import time
-from typing import Dict, List, Optional
+from typing import Dict, List
 import pandas as pd
 import streamlit as st
 from points_table_simulator import PointsTableSimulator
@@ -46,8 +46,8 @@ def _display_qualification_scenarios(
     list_of_points_tables: List[pd.DataFrame],
     list_of_qualification_scenarios: List[pd.DataFrame],
     selected_team: str,
-    away_team_column_name: Optional[str] = "team_2",
-    home_team_column_name: Optional[str] = "team_1"
+    away_team_column_name: str = "team_2",
+    home_team_column_name: str = "team_1"
 ):
     """Display the qualification scenarios."""
     for scenario_no, (points_table, schedule) in enumerate(zip(list_of_points_tables, list_of_qualification_scenarios)):
