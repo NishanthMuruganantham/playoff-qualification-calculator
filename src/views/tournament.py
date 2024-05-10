@@ -1,6 +1,9 @@
 import streamlit as st
 from points_table_simulator import PointsTableSimulator
-from src.functions.fixture_collector import fetch_points_table_for_given_tournament, get_fixture_for_given_tournament
+from src.functions.fixture_collector import (
+    fetch_points_table_for_given_tournament,
+    get_fixture_for_given_tournament
+)
 from src.functions.streamlit_view_functions import (
     _display_given_fixture_and_current_points_table,
     _generate_qualification_scenarios
