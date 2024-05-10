@@ -26,7 +26,6 @@ def _display_given_fixture_and_current_points_table(
     current_points_table: pd.DataFrame, remaining_fixture: pd.DataFrame, expanded: bool = False
 ):
     action = "expand" if not expanded else "collapse"
-    """Display the given fixture and current points table."""
     with st.expander(f"**Click here to {action} given fixture and current points table**", expanded=expanded):
         st.write("")
         schedule_df_column, points_table_df_column = st.columns(2, gap="small")
@@ -58,15 +57,15 @@ def _display_qualification_scenarios(
             schedule_renamed_columns = {column:column.replace("_", " ").title() for column in schedule.columns}
             schedule = schedule.rename(schedule_renamed_columns, axis=1)
             qualification_fixture_column, qualification_points_table_column = st.columns(2, gap="small")
-            qualification_fixture_column.markdown("<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Favourable Outcome</p>", unsafe_allow_html=True)
+            qualification_fixture_column.markdown(
+                "<p style='font-weight: bold; color: #4CAF50;'>Remaining Fixture Favourable Outcome</p>", unsafe_allow_html=True
+            )
             qualification_fixture_column.dataframe(
                 schedule.style.apply(
                     lambda row: [
-                        'background-color: CornflowerBlue;' if row[
-                            away_team_column_name.replace("_", " ").title()
-                        ] == selected_team or row[
-                            home_team_column_name.replace("_", " ").title()
-                        ] == selected_team else '' for _ in row
+                        'background-color: CornflowerBlue;' if 
+                        selected_team in (row[away_team_column_name.replace('_', ' ').title()], row[home_team_column_name.replace('_', ' ').title()])
+                        else '' for _ in row
                     ],
                     axis=1
                 ),
@@ -169,5 +168,5 @@ def _get_inputs_to_generate_qualification_scenarios(points_table_simulator: Poin
         "selected_team_to_generate_qualification_scenarios": selected_team,
         "expected_position_in_the_points_table": expected_position_in_the_points_table,
         "number_of_qualification_scenarios": number_of_qualification_scenarios,
-        "generate_qualification_scenarios_inputs_submitted": True if is_form_submitted else False
+        "generate_qualification_scenarios_inputs_submitted": bool(is_form_submitted)
     }
