@@ -18,7 +18,7 @@ def get_fixture_for_given_tournament(tournament_id: int) -> pd.DataFrame:
     params = {'seriesId': tournament_id}
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(url, params=params, headers=headers, timeout=20)
     response.raise_for_status()
     response_data = response.json()
     fixture_data = response_data["content"]["matches"]
@@ -42,7 +42,7 @@ def fetch_points_table_for_given_tournament(tournament_id: int) -> pd.DataFrame:
     params = {'seriesId': tournament_id}
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(url, params=params, headers=headers, timeout=20)
     response.raise_for_status()
     response_data = response.json()
     points_table_data = response_data["content"]["standings"]["groups"][0]["teamStats"]
