@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bash create_venv.sh
+bash .github/scripts/create_venv.sh
 source venv/bin/activate
 if [ "$1" == 'pylint_check' ]; then
     pip install pylint
