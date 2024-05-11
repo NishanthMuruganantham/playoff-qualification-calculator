@@ -100,7 +100,7 @@ def _generate_qualification_scenarios(points_table_simulator: PointsTableSimulat
             list_of_points_tables = []
             list_of_qualification_scenarios = []
             start_time = time.time()
-            with st.snow():
+            with st.balloons():
                 (
                     list_of_points_tables,
                     list_of_qualification_scenarios
